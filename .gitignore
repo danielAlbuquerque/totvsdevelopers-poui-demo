@@ -14,6 +14,7 @@ yarn-error.log
 # IDEs and editors
 .idea/
 .project
+.vscode
 .classpath
 .c9/
 *.launch
