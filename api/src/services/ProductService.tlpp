@@ -2,41 +2,42 @@
 
 Namespace TotvsDevelopers.Demo.Services
 
-Class ProductService From FWAdapterBaseV2
-  Private Data _cQuery As Character
+Using Namespace TotvsDevelopers.Demo.Adapters
+
+Class ProductService From BaseService
+  Private Data _oProductAdapter
 
 	Public Method New()
-	Public Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric )
-  Public Method FindById( cId As Character )
-  Public Method SaveOrUpdate( jData, cId )
-  Public Method Remove()
-
-  Private Method _ConfigJsonResultSet()
-  Private Method _HandleErrorMessage( aError As Array )
+	Public Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric )
+  Public Method FindById( cId As Character ) As Json
+  Public Method SaveOrUpdate( jData, cId ) As Json
+  Public Method Remove() As Json
 EndClass
 
 Method New() CLASS ProductService
-	_Super:New( 'GET', .T. )
+	_Super:New()
 
-  Self:_ConfigJsonResultSet()
 return
 
-Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class ProductService
-  Default nCurrentPage := 1
-  Default nPageSize := 10
+Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class ProductService
+  Local jResult  := JsonObject():New()
 
-  Self:SetPage( nCurrentPage )
-  Self:SetPageSize( nPageSize )
-	Self:SetQuery( Self:_cQuery )
-	Self:SetWhere( "B1_FILIAL = '"+ FWxFilial('SB1') +"' AND SB1.D_E_L_E_T_ = ' '" )
-	Self:SetOrder( "B1_COD" )
+  Self:_oProductAdapter := ProductAdapter():New()
+  Self:_oProductAdapter:BuildPage( nCurrentPage, nPageSize )
 
-	If ( Self:Execute() )
-		Self:FillGetResponse()
-	EndIf
-Return
+  If ( Self:_oProductAdapter:lOk )
+    jResult['success'] := .T.
+    jResult['result'] := Self:_oProductAdapter:GetJSONResponse()
+  Else
+    jResult['success'] := .F.
+    jResult['result'] := JsonObject():New(0)
+    jResult['result']['code'] := Self:_oProductAdapter:GetCode()
+    jResult['result']['message'] := "Erro ao consultar os produtos"
+    jResult['result']['detailedMessage'] := Self:_oProductAdapter:GetMessage()
+  EndIf
+Return jResult
 
-Method FindById( cId As Character ) Class ProductService
+Method FindById( cId As Character ) As Json Class ProductService
   Local aArea    := FWGetArea()
   Local aAreaSB1 := SB1->( FWGetArea() )
   Local aAreaSBM := SBM->( FWGetArea() )
@@ -65,7 +66,7 @@ Method FindById( cId As Character ) Class ProductService
   FWRestArea( aArea )
 Return jResult
 
-Method SaveOrUpdate( jData, cId ) Class ProductService
+Method SaveOrUpdate( jData, cId ) As Json Class ProductService
   Local aArea    := FWGetArea()
   Local aAreaSB1 := SB1->( FWGetArea() )
   Local oModel   := FWLoadModel("MATA010")
@@ -112,7 +113,7 @@ Method SaveOrUpdate( jData, cId ) Class ProductService
   FWRestArea( aArea )
 Return jResult
 
-Method Remove( cId As Character ) Class ProductService
+Method Remove( cId As Character ) As Json Class ProductService
   Local aArea    := FWGetArea()
   Local aAreaSB1 := SB1->( FWGetArea() )
   Local oModel   := FWLoadModel("MATA010")
@@ -138,29 +139,3 @@ Method Remove( cId As Character ) Class ProductService
   FWRestArea( aAreaSB1 )
   FWRestArea( aArea )
 Return jResult
-
-Method _ConfigJsonResultSet() Class ProductService
-  Self:_cQuery := "SELECT #QueryFields# FROM " + RetSqlName( 'SB1' ) + " SB1 "
-  Self:_cQuery += "LEFT JOIN " + RetSqlName( 'SBM' ) + " SBM "
-	Self:_cQuery += "ON B1_GRUPO = BM_GRUPO "
-	Self:_cQuery += "AND BM_FILIAL = '"+ FWxFilial( 'SBM' ) +"' "
-	Self:_cQuery += "AND SBM.D_E_L_E_T_ = ' ' "
-  Self:_cQuery += "WHERE #QueryWhere# "
-
-  Self:AddMapFields( 'id', 'B1_COD'  , .T., .T., { 'B1_COD', 'C', TamSX3( 'B1_COD' )[1], 0 } )
-	Self:AddMapFields( 'description', 'B1_DESC' , .T., .F., { 'B1_DESC', 'C', TamSX3( 'B1_DESC' )[1], 0 } )
-	Self:AddMapFields( 'group', 'B1_GRUPO', .T., .F., { 'B1_GRUPO', 'C', TamSX3( 'B1_GRUPO' )[1], 0 } )
-	Self:AddMapFields( 'groupDescription', 'BM_DESC' , .T., .F., { 'BM_DESC', 'C', TamSX3( 'BM_DESC' )[1], 0 } )
-Return
-
-Method _HandleErrorMessage( aError As Array ) Class ProductService
-  Local cMessage := "Id do formulário de origem:"  + ' [' + cValToChar(aError[01]) + '], '
-  cMessage += "Id do campo de origem: "      + ' [' + cValToChar(aError[02]) + '], '
-  cMessage += "Id do formulário de erro: "   + ' [' + cValToChar(aError[03]) + '], '
-  cMessage += "Id do campo de erro: "        + ' [' + cValToChar(aError[04]) + '], '
-  cMessage += "Id do erro: "                 + ' [' + cValToChar(aError[05]) + '], '
-  cMessage += "Mensagem do erro: "           + ' [' + cValToChar(aError[06]) + '], '
-  cMessage += "Mensagem da solução: "        + ' [' + cValToChar(aError[07]) + '], '
-  cMessage += "Valor atribuído: "            + ' [' + cValToChar(aError[08]) + '], '
-  cMessage += "Valor anterior: "             + ' [' + cValToChar(aError[09]) + ']'
-Return cMessage

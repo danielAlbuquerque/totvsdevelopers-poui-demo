@@ -1,0 +1,46 @@
+#Include 'tlpp-core.th'
+
+Namespace TotvsDevelopers.Demo.Adapters
+
+Class ProductAdapter From FWAdapterBaseV2
+  Private Data _cQuery As Character
+
+	Public Method New()
+	Public Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric )
+  Private Method _ConfigJsonResultSet()
+EndClass
+
+Method New() CLASS ProductAdapter
+	_Super:New( 'GET', .T. )
+
+  Self:_ConfigJsonResultSet()
+return
+
+Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class ProductAdapter
+  Default nCurrentPage := 1
+  Default nPageSize := 10
+
+  Self:SetPage( nCurrentPage )
+  Self:SetPageSize( nPageSize )
+	Self:SetQuery( Self:_cQuery )
+	Self:SetWhere( "B1_FILIAL = '"+ FWxFilial('SB1') +"' AND SB1.D_E_L_E_T_ = ' '" )
+	Self:SetOrder( "B1_COD" )
+
+	If ( Self:Execute() )
+		Self:FillGetResponse()
+	EndIf
+Return
+
+Method _ConfigJsonResultSet() Class ProductAdapter
+  Self:_cQuery := "SELECT #QueryFields# FROM " + RetSqlName( 'SB1' ) + " SB1 "
+  Self:_cQuery += "LEFT JOIN " + RetSqlName( 'SBM' ) + " SBM "
+	Self:_cQuery += "ON B1_GRUPO = BM_GRUPO "
+	Self:_cQuery += "AND BM_FILIAL = '"+ FWxFilial( 'SBM' ) +"' "
+	Self:_cQuery += "AND SBM.D_E_L_E_T_ = ' ' "
+  Self:_cQuery += "WHERE #QueryWhere# "
+
+  Self:AddMapFields( 'id', 'B1_COD'  , .T., .T., { 'B1_COD', 'C', TamSX3( 'B1_COD' )[1], 0 } )
+	Self:AddMapFields( 'description', 'B1_DESC' , .T., .F., { 'B1_DESC', 'C', TamSX3( 'B1_DESC' )[1], 0 } )
+	Self:AddMapFields( 'group', 'B1_GRUPO', .T., .F., { 'B1_GRUPO', 'C', TamSX3( 'B1_GRUPO' )[1], 0 } )
+	Self:AddMapFields( 'groupDescription', 'BM_DESC' , .T., .F., { 'BM_DESC', 'C', TamSX3( 'BM_DESC' )[1], 0 } )
+Return

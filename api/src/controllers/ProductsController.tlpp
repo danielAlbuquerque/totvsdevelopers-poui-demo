@@ -32,15 +32,16 @@ Return
 
 Method Get() Class ProductsController
   Local jQuery := oRest:GetQueryRequest()
+  Local jResult := Nil
 
   Self:oService := ProductService():New()
-  Self:oService:BuildPage(  jQuery['page'], jQuery['pageSize'] )
+  jResult := Self:oService:GetPage(  jQuery['page'], jQuery['pageSize'] )
 
-  If ( Self:oService:lOk )
-    oRest:SetResponse( Self:oService:GetJSONResponse() )
+  If ( jResult['success'] )
+    oRest:SetResponse( jResult['result'] )
   Else
-    oRest:SetFault(  Self:oService:GetMessage() )
-    oRest:SetStatusCode( Self:oService:GetCode() )
+    oRest:SetFault( jResult['result']:Tojson() )
+    oRest:SetStatusCode( jResult['result']['code'] )
   EndIf
 Return
 
