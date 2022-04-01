@@ -12,6 +12,7 @@ Class ProductService From FWAdapterBaseV2
   Public Method Remove()
 
   Private Method _ConfigJsonResultSet()
+  Private Method _HandleErrorMessage( aError As Array )
 EndClass
 
 Method New() CLASS ProductService
@@ -71,18 +72,25 @@ Method SaveOrUpdate( jData, cId ) Class ProductService
   Local oSB1Mod  := oModel:GetModel("SB1MASTER")
   Local jResult  := JsonObject():New()
 
-  Local aErro    As Array
-  Local cMessage As Character
-
   jResult['result'] := JsonObject():New()
 
   Default cId := Nil
 
-  oModel:SetOperation( If( Empty( cId ), 3, 4 ) )
+  If Empty( cId )
+    oModel:SetOperation( 3 )
+  Else
+    DbSelectArea( "SB1" )
+    DbSetOrder( 1 )
+    MsSeek( FWXFilial("SB1")+cId )
+    oModel:SetOperation( 4 )
+  EndIf
+
   oModel:Activate()
 
-  //Pegando o model e setando os campos
-  oSB1Mod:SetValue( "B1_COD" ,   jData['id'] )
+  If ( oModel:nOperation == 3 )
+    oSB1Mod:SetValue( "B1_COD" ,   jData['id'] )
+  EndIf
+
   oSB1Mod:SetValue( "B1_DESC",   jData['description'] )
   oSB1Mod:SetValue( "B1_TIPO",   jData['kind'] )
   oSB1Mod:SetValue( "B1_UM",     jData['um'] )
@@ -92,22 +100,37 @@ Method SaveOrUpdate( jData, cId ) Class ProductService
     jResult['success'] := .T.
     jResult['result']['message'] := 'Produto salvo com sucesso'
   Else
-    aErro := oModel:GetErrorMessage()
-
-    cMessage := "Id do formulário de origem:"  + ' [' + cValToChar(aErro[01]) + '], '
-    cMessage += "Id do campo de origem: "      + ' [' + cValToChar(aErro[02]) + '], '
-    cMessage += "Id do formulário de erro: "   + ' [' + cValToChar(aErro[03]) + '], '
-    cMessage += "Id do campo de erro: "        + ' [' + cValToChar(aErro[04]) + '], '
-    cMessage += "Id do erro: "                 + ' [' + cValToChar(aErro[05]) + '], '
-    cMessage += "Mensagem do erro: "           + ' [' + cValToChar(aErro[06]) + '], '
-    cMessage += "Mensagem da solução: "        + ' [' + cValToChar(aErro[07]) + '], '
-    cMessage += "Valor atribuído: "            + ' [' + cValToChar(aErro[08]) + '], '
-    cMessage += "Valor anterior: "             + ' [' + cValToChar(aErro[09]) + ']'
-
     jResult['success'] := .F.
     jResult['result']['code'] := 400
     jResult['result']['message'] := "Erro ao salvar o produto"
-    jResult['result']['detailedMessage'] := cMessage
+    jResult['result']['detailedMessage'] := Self:_HandleErrorMessage(  oModel:GetErrorMessage() )
+  EndIf
+
+  oModel:DeActivate()
+
+  FWRestArea( aAreaSB1 )
+  FWRestArea( aArea )
+Return jResult
+
+Method Remove( cId As Character ) Class ProductService
+  Local aArea    := FWGetArea()
+  Local aAreaSB1 := SB1->( FWGetArea() )
+  Local oModel   := FWLoadModel("MATA010")
+  Local jResult  := JsonObject():New()
+  Local aFields  := { {"B1_COD", cId, Nil } }
+
+  DbSelectArea( "SB1" )
+  DbSetOrder( 1 )
+  MsSeek( FWXFilial("SB1")+cId )
+
+  If ( FWMVCRotAuto(oModel, "SB1", 5, {{"SB1MASTER", aFields}} ,,.T.) )
+    jResult['success'] := .T.
+    jResult['result']['message'] := 'Produto excluído com sucesso'
+   Else
+    jResult['success'] := .F.
+    jResult['result']['code'] := 400
+    jResult['result']['message'] := "Erro ao excluir o produto"
+    jResult['result']['detailedMessage'] := Self:_HandleErrorMessage(  oModel:GetErrorMessage() )
   EndIf
 
   oModel:DeActivate()
@@ -124,8 +147,20 @@ Method _ConfigJsonResultSet() Class ProductService
 	Self:_cQuery += "AND SBM.D_E_L_E_T_ = ' ' "
   Self:_cQuery += "WHERE #QueryWhere# "
 
-  Self:AddMapFields( 'id'             , 'B1_COD'  , .T., .T., { 'B1_COD', 'C', TamSX3( 'B1_COD' )[1], 0 } )
-	Self:AddMapFields( 'description'	    , 'B1_DESC' , .T., .F., { 'B1_DESC', 'C', TamSX3( 'B1_DESC' )[1], 0 } )
-	Self:AddMapFields( 'group'		        , 'B1_GRUPO', .T., .F., { 'B1_GRUPO', 'C', TamSX3( 'B1_GRUPO' )[1], 0 } )
-	Self:AddMapFields( 'groupDescription'	, 'BM_DESC' , .T., .F., { 'BM_DESC', 'C', TamSX3( 'BM_DESC' )[1], 0 } )
+  Self:AddMapFields( 'id', 'B1_COD'  , .T., .T., { 'B1_COD', 'C', TamSX3( 'B1_COD' )[1], 0 } )
+	Self:AddMapFields( 'description', 'B1_DESC' , .T., .F., { 'B1_DESC', 'C', TamSX3( 'B1_DESC' )[1], 0 } )
+	Self:AddMapFields( 'group', 'B1_GRUPO', .T., .F., { 'B1_GRUPO', 'C', TamSX3( 'B1_GRUPO' )[1], 0 } )
+	Self:AddMapFields( 'groupDescription', 'BM_DESC' , .T., .F., { 'BM_DESC', 'C', TamSX3( 'BM_DESC' )[1], 0 } )
 Return
+
+Method _HandleErrorMessage( aError As Array ) Class ProductService
+  Local cMessage := "Id do formulário de origem:"  + ' [' + cValToChar(aError[01]) + '], '
+  cMessage += "Id do campo de origem: "      + ' [' + cValToChar(aError[02]) + '], '
+  cMessage += "Id do formulário de erro: "   + ' [' + cValToChar(aError[03]) + '], '
+  cMessage += "Id do campo de erro: "        + ' [' + cValToChar(aError[04]) + '], '
+  cMessage += "Id do erro: "                 + ' [' + cValToChar(aError[05]) + '], '
+  cMessage += "Mensagem do erro: "           + ' [' + cValToChar(aError[06]) + '], '
+  cMessage += "Mensagem da solução: "        + ' [' + cValToChar(aError[07]) + '], '
+  cMessage += "Valor atribuído: "            + ' [' + cValToChar(aError[08]) + '], '
+  cMessage += "Valor anterior: "             + ' [' + cValToChar(aError[09]) + ']'
+Return cMessage
