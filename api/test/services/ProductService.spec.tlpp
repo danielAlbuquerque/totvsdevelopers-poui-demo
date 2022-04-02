@@ -1,0 +1,51 @@
+#Include "tlpp-core.th"
+#Include "tlpp-probat.th"
+
+Namespace TotvsDevelopers.Demo.test
+
+Using Namespace tlpp.probat
+Using Namespace TotvsDevelopers.Demo.Services
+
+@TestFixture(description="Validates webservice connection and responses")
+Class ProductServiceSpec
+    Private Data oService
+
+    Public Method New() constructor
+
+    @OneTimeSetUp()
+    Public Method Setup()
+
+    @OneTimeTearDown()
+    Public Method TearDown()
+
+    @Test('It should validate the instance')
+    Public Method ValidateInstance()
+
+    // @Test('It should return a page os products')
+    // Public Method GetPage()
+EndClass
+
+Method New() Class ProductServiceSpec
+Return Self
+
+Method Setup() Class ProductServiceSpec
+    RpcSetType(3)
+    RpcSetEnv('99', '01')
+    Self:oService := ProductService():New()
+Return .T.
+
+Method TearDown() Class ProductServiceSpec
+  FreeObj( self:oService )
+  RpcClearEnv()
+Return .T.
+
+Method ValidateInstance() Class ProductServiceSpec
+  AssertEquals( ValType( Self:oService ), "O" )
+Return .T.
+
+// Method GetPage() Class ProductServiceSpec
+//     Local xResult := Self:oService:GetData()
+//     AssertNotEquals( xResult, 0 )
+// Return .T.
+
+

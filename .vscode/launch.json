@@ -32,7 +32,19 @@
 	"lastPrograms": [
 		{
 			"label": "u_xxx"
+		},
+		{
+			"args": [],
+			"label": "TLPP.PROBAT.RUN"
+		},
+		{
+			"args": [
+				"type:namespace",
+				"TotvsDevelopers.Demo.test"
+			],
+			"label": "TLPP.PROBAT.RUN"
 		}
 	],
-	"lastProgramExecuted": "u_xxx"
+	"lastProgramExecuted": "TLPP.PROBAT.RUN",
+	"lastProgramArgumens": []
 }
