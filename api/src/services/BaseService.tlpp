@@ -12,13 +12,13 @@ Method New() Class BaseService
 Return
 
 Method _HandleErrorMessage( aError As Array ) As Character Class BaseService
-  Local cMessage := "Id do formulário de origem:"  + ' [' + cValToChar(aError[01]) + '], '
-  cMessage += "Id do campo de origem: "      + ' [' + cValToChar(aError[02]) + '], '
-  cMessage += "Id do formulário de erro: "   + ' [' + cValToChar(aError[03]) + '], '
-  cMessage += "Id do campo de erro: "        + ' [' + cValToChar(aError[04]) + '], '
-  cMessage += "Id do erro: "                 + ' [' + cValToChar(aError[05]) + '], '
-  cMessage += "Mensagem do erro: "           + ' [' + cValToChar(aError[06]) + '], '
-  cMessage += "Mensagem da solução: "        + ' [' + cValToChar(aError[07]) + '], '
-  cMessage += "Valor atribuído: "            + ' [' + cValToChar(aError[08]) + '], '
-  cMessage += "Valor anterior: "             + ' [' + cValToChar(aError[09]) + ']'
+    Local cMessage := "Id do formulário de origem:"  + ' [' + cValToChar(aError[01]) + '], '
+    cMessage += "Id do campo de origem: "      + ' [' + cValToChar(aError[02]) + '], '
+    cMessage += "Id do formulário de erro: "   + ' [' + cValToChar(aError[03]) + '], '
+    cMessage += "Id do campo de erro: "        + ' [' + cValToChar(aError[04]) + '], '
+    cMessage += "Id do erro: "                 + ' [' + cValToChar(aError[05]) + '], '
+    cMessage += "Mensagem do erro: "           + ' [' + cValToChar(aError[06]) + '], '
+    cMessage += "Mensagem da solução: "        + ' [' + cValToChar(aError[07]) + '], '
+    cMessage += "Valor atribuído: "            + ' [' + cValToChar(aError[08]) + '], '
+    cMessage += "Valor anterior: "             + ' [' + cValToChar(aError[09]) + ']'
 Return cMessage

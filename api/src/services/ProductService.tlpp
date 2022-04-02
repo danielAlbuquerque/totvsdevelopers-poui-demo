@@ -5,137 +5,141 @@ Namespace TotvsDevelopers.Demo.Services
 Using Namespace TotvsDevelopers.Demo.Adapters
 
 Class ProductService From BaseService
-  Private Data _oProductAdapter
+    Private Data _oProductAdapter
 
 	Public Method New()
 	Public Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric )
-  Public Method FindById( cId As Character ) As Json
-  Public Method SaveOrUpdate( jData, cId ) As Json
-  Public Method Remove() As Json
+    Public Method FindById( cId As Character ) As Json
+    Public Method SaveOrUpdate( jData, cId ) As Json
+    Public Method Remove() As Json
 EndClass
 
 Method New() CLASS ProductService
 	_Super:New()
-
 return
 
 Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class ProductService
-  Local jResult  := JsonObject():New()
+    Local jResult  := JsonObject():New()
 
-  Self:_oProductAdapter := ProductAdapter():New()
-  Self:_oProductAdapter:BuildPage( nCurrentPage, nPageSize )
+    Default nCurrentPage := 1
+    Default nPageSize := 10
 
-  If ( Self:_oProductAdapter:lOk )
-    jResult['success'] := .T.
-    jResult['result'] := Self:_oProductAdapter:GetJSONResponse()
-  Else
-    jResult['success'] := .F.
-    jResult['result'] := JsonObject():New(0)
-    jResult['result']['code'] := Self:_oProductAdapter:GetCode()
-    jResult['result']['message'] := "Erro ao consultar os produtos"
-    jResult['result']['detailedMessage'] := Self:_oProductAdapter:GetMessage()
-  EndIf
+    Self:_oProductAdapter := ProductAdapter():New()
+    Self:_oProductAdapter:BuildPage( nCurrentPage, nPageSize )
+
+    If ( Self:_oProductAdapter:lOk )
+        jResult['success'] := .T.
+        jResult['result'] := Self:_oProductAdapter:GetJSONResponse()
+    Else
+        jResult['success'] := .F.
+        jResult['result'] := JsonObject():New(0)
+        jResult['result']['code'] := Self:_oProductAdapter:GetCode()
+        jResult['result']['message'] := "Erro ao consultar os produtos"
+        jResult['result']['detailedMessage'] := Self:_oProductAdapter:GetMessage()
+    EndIf
 Return jResult
 
 Method FindById( cId As Character ) As Json Class ProductService
-  Local aArea    := FWGetArea()
-  Local aAreaSB1 := SB1->( FWGetArea() )
-  Local aAreaSBM := SBM->( FWGetArea() )
-  Local jResult  := JsonObject():New()
+    Local aArea    := FWGetArea()
+    Local aAreaSB1 := SB1->( FWGetArea() )
+    Local aAreaSBM := SBM->( FWGetArea() )
+    Local jResult  := JsonObject():New()
 
-  jResult['result'] := JsonObject():New()
+    jResult['result'] := JsonObject():New()
 
-  DbSelectArea("SB1")
-  DbSetOrder( 1 )
+    DbSelectArea("SB1")
+    DbSetOrder( 1 )
 
-  If ( MsSeek( FWXFilial("SB1")+cId ) )
-    jResult['success'] := .T.
-    jResult['result']["id"] := AllTrim( SB1->B1_COD )
-    jResult['result']["description"] := AllTrim( SB1->B1_DESC )
-    jResult['result']["group"] := AllTrim( SB1->B1_GRUPO )
-    jResult['result']["groupDescription"] := AllTrim( Posicione("SBM", 1, FWXFilial("SBM")+SB1->B1_COD, "BM_DESC") )
-  Else
-    jResult['success'] := .F.
-    jResult['result']['code'] := 404
-    jResult['result']['message'] := "Produto não encontrado"
-    jResult['result']['detailedMessage'] := "O produto " + cId + " não foi encontrado"
-  EndIf
+    If ( MsSeek( FWXFilial("SB1")+cId ) )
+        jResult['success'] := .T.
+        jResult['result']["id"] := AllTrim( SB1->B1_COD )
+        jResult['result']["description"] := AllTrim( SB1->B1_DESC )
+        jResult['result']["group"] := AllTrim( SB1->B1_GRUPO )
+        jResult['result']["groupDescription"] := AllTrim( Posicione("SBM", 1, FWXFilial("SBM")+SB1->B1_COD, "BM_DESC") )
+    Else
+        jResult['success'] := .F.
+        jResult['result']['code'] := 404
+        jResult['result']['message'] := "Produto não encontrado"
+        jResult['result']['detailedMessage'] := "O produto " + cId + " não foi encontrado"
+    EndIf
 
-  FWRestArea( aAreaSBM )
-  FWRestArea( aAreaSB1 )
-  FWRestArea( aArea )
+    FWRestArea( aAreaSBM )
+    FWRestArea( aAreaSB1 )
+    FWRestArea( aArea )
 Return jResult
 
 Method SaveOrUpdate( jData, cId ) As Json Class ProductService
-  Local aArea    := FWGetArea()
-  Local aAreaSB1 := SB1->( FWGetArea() )
-  Local oModel   := FWLoadModel("MATA010")
-  Local oSB1Mod  := oModel:GetModel("SB1MASTER")
-  Local jResult  := JsonObject():New()
+    Local aArea    := FWGetArea()
+    Local aAreaSB1 := SB1->( FWGetArea() )
+    Local oModel   := FWLoadModel("MATA010")
+    Local oSB1Mod  := oModel:GetModel("SB1MASTER")
+    Local jResult  := JsonObject():New()
 
-  jResult['result'] := JsonObject():New()
+    jResult['result'] := JsonObject():New()
 
-  Default cId := Nil
+    Default cId := Nil
 
-  If Empty( cId )
-    oModel:SetOperation( 3 )
-  Else
-    DbSelectArea( "SB1" )
-    DbSetOrder( 1 )
-    MsSeek( FWXFilial("SB1")+cId )
-    oModel:SetOperation( 4 )
-  EndIf
+    If Empty( cId )
+        oModel:SetOperation( 3 )
+    Else
+        DbSelectArea( "SB1" )
+        DbSetOrder( 1 )
+        MsSeek( FWXFilial("SB1")+cId )
+        oModel:SetOperation( 4 )
+    EndIf
 
-  oModel:Activate()
+    oModel:Activate()
 
-  If ( oModel:nOperation == 3 )
-    oSB1Mod:SetValue( "B1_COD" ,   jData['id'] )
-  EndIf
+    If ( oModel:nOperation == 3 )
+        oSB1Mod:SetValue( "B1_COD" ,   jData['id'] )
+    EndIf
 
-  oSB1Mod:SetValue( "B1_DESC",   jData['description'] )
-  oSB1Mod:SetValue( "B1_TIPO",   jData['kind'] )
-  oSB1Mod:SetValue( "B1_UM",     jData['um'] )
-  oSB1Mod:SetValue( "B1_LOCPAD", jData['warehouse'] )
+    oSB1Mod:SetValue( "B1_DESC",   jData['description'] )
+    oSB1Mod:SetValue( "B1_TIPO",   jData['kind'] )
+    oSB1Mod:SetValue( "B1_UM",     jData['um'] )
+    oSB1Mod:SetValue( "B1_LOCPAD", jData['warehouse'] )
 
-  If ( oModel:VldData() .And. oModel:CommitData())
-    jResult['success'] := .T.
-    jResult['result']['message'] := 'Produto salvo com sucesso'
-  Else
-    jResult['success'] := .F.
-    jResult['result']['code'] := 400
-    jResult['result']['message'] := "Erro ao salvar o produto"
-    jResult['result']['detailedMessage'] := Self:_HandleErrorMessage(  oModel:GetErrorMessage() )
-  EndIf
+    If ( oModel:VldData() .And. oModel:CommitData())
+        jResult['success'] := .T.
+        jResult['result']['message'] := 'Produto salvo com sucesso'
+    Else
+        jResult['success'] := .F.
+        jResult['result']['code'] := 400
+        jResult['result']['message'] := "Erro ao salvar o produto"
+        jResult['result']['detailedMessage'] := Self:_HandleErrorMessage(  oModel:GetErrorMessage() )
+    EndIf
 
-  oModel:DeActivate()
+    oModel:DeActivate()
 
-  FWRestArea( aAreaSB1 )
-  FWRestArea( aArea )
+    FWRestArea( aAreaSB1 )
+    FWRestArea( aArea )
 Return jResult
 
 Method Remove( cId As Character ) As Json Class ProductService
-  Local aArea    := FWGetArea()
-  Local aAreaSB1 := SB1->( FWGetArea() )
-  Local oModel   := FWLoadModel("MATA010")
-  Local jResult  := JsonObject():New()
-  Local aFields  := { {"B1_COD", cId, Nil } }
+    Local aArea    := FWGetArea()
+    Local aAreaSB1 := SB1->( FWGetArea() )
+    Local oModel   := FWLoadModel("MATA010")
+    Local jResult  := JsonObject():New()
+    Local aFields  := { {"B1_COD", cId, Nil } }
 
-  DbSelectArea( "SB1" )
-  DbSetOrder( 1 )
-  MsSeek( FWXFilial("SB1")+cId )
+    DbSelectArea( "SB1" )
+    DbSetOrder( 1 )
+    MsSeek( FWXFilial("SB1")+cId )
 
-  If ( FWMVCRotAuto(oModel, "SB1", 5, {{"SB1MASTER", aFields}} ,,.T.) )
-    jResult['success'] := .T.
-    jResult['result']['message'] := 'Produto excluído com sucesso'
-   Else
-    jResult['success'] := .F.
-    jResult['result']['code'] := 400
-    jResult['result']['message'] := "Erro ao excluir o produto"
-    jResult['result']['detailedMessage'] := Self:_HandleErrorMessage(  oModel:GetErrorMessage() )
-  EndIf
+    jResult['result'] := JsonObject():New()
 
-  oModel:DeActivate()
+    If ( FWMVCRotAuto(oModel, "SB1", 5, {{"SB1MASTER", aFields}} ,,.T.) )
+        jResult['success'] := .T.
+        jResult['result']['message'] := 'Produto excluído com sucesso'
+    Else
+        jResult['success'] := .F.
+        jResult['result']['code'] := 400
+        jResult['result']['message'] := "Erro ao excluir o produto"
+        jResult['result']['detailedMessage'] := Self:_HandleErrorMessage(  oModel:GetErrorMessage() )
+    EndIf
 
-  FWRestArea( aAreaSB1 )
-  FWRestArea( aArea )
+    oModel:DeActivate()
+
+    FWRestArea( aAreaSB1 )
+    FWRestArea( aArea )
 Return jResult

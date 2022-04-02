@@ -6,7 +6,15 @@ Namespace TotvsDevelopers.Demo.test
 Using Namespace tlpp.probat
 Using Namespace TotvsDevelopers.Demo.Services
 
-@TestFixture(description="Validates webservice connection and responses")
+Static jProductMock := {;
+    "id": "TSTPRODCODE",;
+    "description": "PRODUCT TEST",;
+    "kind": "PA",;
+    "um": "UN",;
+    "warehouse": "01";
+}
+
+@TestFixture(description="Valida a instancia de ProductService")
 Class ProductServiceSpec
     Private Data oService
 
@@ -18,11 +26,20 @@ Class ProductServiceSpec
     @OneTimeTearDown()
     Public Method TearDown()
 
-    @Test('It should validate the instance')
+    @Test('It should validates the instance')
     Public Method ValidateInstance()
 
-    // @Test('It should return a page os products')
-    // Public Method GetPage()
+    @Test('It should return a page os products')
+    Public Method GetPage()
+
+    @Test('It should create a new product and return success = true')
+    Public Method CreateProduct()
+
+    @Test('It should update a product and return success = true')
+    Public Method UpdateProduct()
+
+    @Test('Remove product and return true')
+    Public Method RemoveProduct()
 EndClass
 
 Method New() Class ProductServiceSpec
@@ -35,17 +52,55 @@ Method Setup() Class ProductServiceSpec
 Return .T.
 
 Method TearDown() Class ProductServiceSpec
-  FreeObj( self:oService )
-  RpcClearEnv()
+    FreeObj( self:oService )
+    RpcClearEnv()
 Return .T.
 
 Method ValidateInstance() Class ProductServiceSpec
-  AssertEquals( ValType( Self:oService ), "O" )
+    AssertEquals( ValType( Self:oService ), "O" )
 Return .T.
 
-// Method GetPage() Class ProductServiceSpec
-//     Local xResult := Self:oService:GetData()
-//     AssertNotEquals( xResult, 0 )
-// Return .T.
+Method GetPage() Class ProductServiceSpec
+    Local xResult := Self:oService:GetPage()
+    AssertTrue( xResult["success"] )
+Return .T.
+
+Method CreateProduct() Class ProductServiceSpec
+    Local xResult
+
+    Begin Transaction
+        xResult := Self:oService:SaveOrUpdate( jProductMock )
+        AssertTrue( xResult["success"] )
+        DisarmTransaction()
+    End Transaction
+Return .T.
+
+Method UpdateProduct() Class ProductServiceSpec
+    Local xResult
+
+    Begin Transaction
+        // Primeiro salva o produto
+        xResult := Self:oService:SaveOrUpdate( jProductMock )
+        AssertTrue( xResult["success"] )
+        // Atualizacao
+        xResult := Self:oService:SaveOrUpdate( jProductMock, "TSTPRODCODE" )
+        AssertTrue( xResult["success"] )
+        DisarmTransaction()
+    End Transaction
+Return .T.
+
+Method RemoveProduct() Class ProductServiceSpec
+    Local xResult
+
+    Begin Transaction
+        // Primeiro salva o produto
+        xResult := Self:oService:SaveOrUpdate( jProductMock )
+        AssertTrue( xResult["success"] )
+        // Atualizacao
+        xResult := Self:oService:Remove( "TSTPRODCODE" )
+        AssertTrue( xResult["success"] )
+        DisarmTransaction()
+    End Transaction
+Return .T.
 
 
