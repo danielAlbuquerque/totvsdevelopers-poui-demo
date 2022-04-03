@@ -1,0 +1,37 @@
+#Include 'tlpp-core.th'
+
+Namespace TotvsDevelopers.Demo.Services
+
+Using Namespace TotvsDevelopers.Demo.Adapters
+
+Class UnityMeasureService From BaseService
+    Private Data _oUnityMeasureAdapter
+
+	Public Method New()
+	Public Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric )
+EndClass
+
+Method New() CLASS UnityMeasureService
+	_Super:New()
+return
+
+Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class UnityMeasureService
+    Local jResult  := JsonObject():New()
+
+    Default nCurrentPage := 1
+    Default nPageSize := 10
+
+    Self:_oUnityMeasureAdapter := UnityMeasureAdapter():New()
+    Self:_oUnityMeasureAdapter:BuildPage( nCurrentPage, nPageSize )
+
+    If ( Self:_oUnityMeasureAdapter:lOk )
+        jResult['success'] := .T.
+        jResult['result'] := Self:_oUnityMeasureAdapter:GetJSONResponse()
+    Else
+        jResult['success'] := .F.
+        jResult['result'] := JsonObject():New(0)
+        jResult['result']['code'] := Self:_oUnityMeasureAdapter:GetCode()
+        jResult['result']['message'] := "Erro ao consultar unidades de medidas"
+        jResult['result']['detailedMessage'] := Self:_oUnityMeasureAdapter:GetMessage()
+    EndIf
+Return jResult

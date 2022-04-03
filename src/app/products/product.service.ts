@@ -11,4 +11,8 @@ export class ProductService {
   public getData() {
     return this.http.get(`/api/v1/products`);
   }
+
+  public save( productData: any ) {
+    return this.http.post(`/api/v1/products`, productData);
+  }
 }

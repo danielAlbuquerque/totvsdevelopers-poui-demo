@@ -1,0 +1,36 @@
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+
+Namespace TotvsDevelopers.Demo.Controllers
+
+Using Namespace TotvsDevelopers.Demo.Services
+
+Class UnityMeasuresController From BaseController
+    Private Data oService
+
+    Public Method New() Constructor
+
+    @Get("/api/v1/unity-measure")
+    Public Method Get()
+
+EndClass
+
+Method New() Class UnityMeasuresController
+    _Super:New()
+Return
+
+Method Get() Class UnityMeasuresController
+    Local jQuery := oRest:GetQueryRequest()
+    Local jResult := Nil
+
+    Self:oService := UnityMeasureService():New()
+    jResult := Self:oService:GetPage(  Val(jQuery['page']), Val(jQuery['pageSize']) )
+
+    If ( jResult['success'] )
+        oRest:SetResponse( jResult['result'] )
+    Else
+        oRest:SetFault( jResult['result']:Tojson() )
+        oRest:SetStatusCode( jResult['result']['code'] )
+    EndIf
+Return
+

@@ -1,0 +1,39 @@
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+
+Namespace TotvsDevelopers.Demo.Controllers
+
+Using Namespace TotvsDevelopers.Demo.Services
+
+Class KindProductsController From BaseController
+    Private Data oService
+
+    Public Method New() Constructor
+
+    @Get("/api/v1/kind-products")
+    Public Method Get()
+
+EndClass
+
+Method New() Class KindProductsController
+    _Super:New()
+Return
+
+Method Get() Class KindProductsController
+    Local jResponse := JsonObject():New()
+    Local nI As Numeric
+    Local aContent := FWGetSX5( "02" )
+
+    jResponse['items'] := {}
+    jResponse['hasNext'] := .F.
+
+    For nI := 1 To Len( aContent )
+        aAdd( jResponse['items'], {;
+            "id": AllTrim( aContent[nI][3] ),;
+            "description": AllTrim( aContent[nI][4] );
+        } )
+    Next nI
+
+    oRest:SetResponse( jResponse )
+Return
+

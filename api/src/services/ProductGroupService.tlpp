@@ -1,0 +1,141 @@
+#Include 'tlpp-core.th'
+
+Namespace TotvsDevelopers.Demo.Services
+
+Using Namespace TotvsDevelopers.Demo.Adapters
+
+Class ProductGroupService From BaseService
+    Private Data _oProductGroupAdapter
+
+	Public Method New()
+	Public Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric )
+    Public Method FindById( cId As Character ) As Json
+    Public Method SaveOrUpdate( jData, cId ) As Json
+    Public Method Remove() As Json
+EndClass
+
+Method New() CLASS ProductGroupService
+	_Super:New()
+return
+
+Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class ProductGroupService
+    Local jResult  := JsonObject():New()
+
+    Default nCurrentPage := 1
+    Default nPageSize := 10
+
+    Self:_oProductGroupAdapter := ProductGroupAdapter():New()
+    Self:_oProductGroupAdapter:BuildPage( nCurrentPage, nPageSize )
+
+    If ( Self:_oProductGroupAdapter:lOk )
+        jResult['success'] := .T.
+        jResult['result'] := Self:_oProductGroupAdapter:GetJSONResponse()
+    Else
+        jResult['success'] := .F.
+        jResult['result'] := JsonObject():New(0)
+        jResult['result']['code'] := Self:_oProductGroupAdapter:GetCode()
+        jResult['result']['message'] := "Erro ao consultar grupo de produto"
+        jResult['result']['detailedMessage'] := Self:_oProductGroupAdapter:GetMessage()
+    EndIf
+Return jResult
+
+Method FindById( cId As Character ) As Json Class ProductGroupService
+    Local aArea    := FWGetArea()
+    Local aAreaSBM := SBM->( FWGetArea() )
+    Local jResult  := JsonObject():New()
+
+    jResult['result'] := JsonObject():New()
+
+    DbSelectArea("SBM")
+    DbSetOrder( 1 )
+
+    If ( MsSeek( FWXFilial("SBM")+cId ) )
+        jResult['success'] := .T.
+        jResult['result']["id"] := AllTrim( SBM->BM_GRUPO )
+        jResult['result']["description"] := AllTrim( SBM->BM_DESC )
+    Else
+        jResult['success'] := .F.
+        jResult['result']['code'] := 404
+        jResult['result']['message'] := "Grupo não encontrado"
+        jResult['result']['detailedMessage'] := "O Grupo " + cId + " não foi encontrado"
+    EndIf
+
+    FWRestArea( aAreaSBM )
+    FWRestArea( aArea )
+Return jResult
+
+Method SaveOrUpdate( jData, cId ) As Json Class ProductGroupService
+    Local aArea    := FWGetArea()
+    Local aAreaSB1 := SB1->( FWGetArea() )
+    Local oModel   := FWLoadModel("MATA010")
+    Local oSB1Mod  := oModel:GetModel("SB1MASTER")
+    Local jResult  := JsonObject():New()
+
+    jResult['result'] := JsonObject():New()
+
+    Default cId := Nil
+
+    If Empty( cId )
+        oModel:SetOperation( 3 )
+    Else
+        DbSelectArea( "SB1" )
+        DbSetOrder( 1 )
+        MsSeek( FWXFilial("SB1")+cId )
+        oModel:SetOperation( 4 )
+    EndIf
+
+    oModel:Activate()
+
+    If ( oModel:nOperation == 3 )
+        oSB1Mod:SetValue( "B1_COD" ,   jData['id'] )
+    EndIf
+
+    oSB1Mod:SetValue( "B1_DESC",   jData['description'] )
+    oSB1Mod:SetValue( "B1_TIPO",   jData['kind'] )
+    oSB1Mod:SetValue( "B1_UM",     jData['um'] )
+    oSB1Mod:SetValue( "B1_LOCPAD", jData['warehouse'] )
+
+    If ( oModel:VldData() .And. oModel:CommitData())
+        jResult['success'] := .T.
+        jResult['result']['message'] := 'Produto salvo com sucesso'
+    Else
+        jResult['success'] := .F.
+        jResult['result']['code'] := 400
+        jResult['result']['message'] := "Erro ao salvar o produto"
+        jResult['result']['detailedMessage'] := Self:_HandleErrorMessage(  oModel:GetErrorMessage() )
+    EndIf
+
+    oModel:DeActivate()
+
+    FWRestArea( aAreaSB1 )
+    FWRestArea( aArea )
+Return jResult
+
+Method Remove( cId As Character ) As Json Class ProductGroupService
+    Local aArea    := FWGetArea()
+    Local aAreaSB1 := SB1->( FWGetArea() )
+    Local oModel   := FWLoadModel("MATA010")
+    Local jResult  := JsonObject():New()
+    Local aFields  := { {"B1_COD", cId, Nil } }
+
+    DbSelectArea( "SB1" )
+    DbSetOrder( 1 )
+    MsSeek( FWXFilial("SB1")+cId )
+
+    jResult['result'] := JsonObject():New()
+
+    If ( FWMVCRotAuto(oModel, "SB1", 5, {{"SB1MASTER", aFields}} ,,.T.) )
+        jResult['success'] := .T.
+        jResult['result']['message'] := 'Produto excluído com sucesso'
+    Else
+        jResult['success'] := .F.
+        jResult['result']['code'] := 400
+        jResult['result']['message'] := "Erro ao excluir o produto"
+        jResult['result']['detailedMessage'] := Self:_HandleErrorMessage(  oModel:GetErrorMessage() )
+    EndIf
+
+    oModel:DeActivate()
+
+    FWRestArea( aAreaSB1 )
+    FWRestArea( aArea )
+Return jResult

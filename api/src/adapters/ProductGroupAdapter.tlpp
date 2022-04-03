@@ -1,0 +1,40 @@
+#Include 'tlpp-core.th'
+
+Namespace TotvsDevelopers.Demo.Adapters
+
+Class ProductGroupAdapter From FWAdapterBaseV2
+  	Private Data _cQuery As Character
+
+	Public Method New()
+	Public Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric )
+  	Private Method _ConfigJsonResultSet()
+EndClass
+
+Method New() CLASS ProductGroupAdapter
+	_Super:New( 'GET', .T. )
+
+  	Self:_ConfigJsonResultSet()
+return
+
+Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class ProductGroupAdapter
+	Default nCurrentPage := 1
+	Default nPageSize := 10
+
+	Self:SetPage( nCurrentPage )
+	Self:SetPageSize( nPageSize )
+	Self:SetQuery( Self:_cQuery )
+	Self:SetWhere( "BM_FILIAL = '"+ FWxFilial('SBM') +"' AND SBM.D_E_L_E_T_ = ' '" )
+	Self:SetOrder( "BM_GRUPO" )
+
+	If ( Self:Execute() )
+		Self:FillGetResponse()
+	EndIf
+Return
+
+Method _ConfigJsonResultSet() Class ProductGroupAdapter
+	Self:_cQuery := "SELECT #QueryFields# FROM " + RetSqlName( 'SBM' ) + " SBM "
+  	Self:_cQuery += "WHERE #QueryWhere# "
+
+  	Self:AddMapFields( "id", "BM_GRUPO"  , .T., .T., { "BM_GRUPO", "C", TamSX3( "BM_GRUPO" )[1], 0 } )
+	Self:AddMapFields( "description", "BM_DESC" , .T., .F., { "BM_DESC", "C", TamSX3( "BM_DESC" )[1], 0 } )
+Return

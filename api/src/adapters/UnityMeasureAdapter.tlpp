@@ -1,0 +1,40 @@
+#Include 'tlpp-core.th'
+
+Namespace TotvsDevelopers.Demo.Adapters
+
+Class UnityMeasureAdapter From FWAdapterBaseV2
+  	Private Data _cQuery As Character
+
+	Public Method New()
+	Public Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric )
+  	Private Method _ConfigJsonResultSet()
+EndClass
+
+Method New() CLASS UnityMeasureAdapter
+	_Super:New( 'GET', .T. )
+
+  	Self:_ConfigJsonResultSet()
+return
+
+Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class UnityMeasureAdapter
+	Default nCurrentPage := 1
+	Default nPageSize := 10
+
+	Self:SetPage( nCurrentPage )
+	Self:SetPageSize( nPageSize )
+	Self:SetQuery( Self:_cQuery )
+	Self:SetWhere( "AH_FILIAL = '"+ FWxFilial('SAH') +"' AND SAH.D_E_L_E_T_ = ' '" )
+	Self:SetOrder( "AH_UNIMED" )
+
+	If ( Self:Execute() )
+		Self:FillGetResponse()
+	EndIf
+Return
+
+Method _ConfigJsonResultSet() Class UnityMeasureAdapter
+	Self:_cQuery := "SELECT #QueryFields# FROM " + RetSqlName( 'SAH' ) + " SAH "
+  	Self:_cQuery += "WHERE #QueryWhere# "
+
+  	Self:AddMapFields( "id", "AH_UNIMED"  , .T., .T., { "AH_UNIMED", "C", TamSX3( "AH_UNIMED" )[1], 0 } )
+	Self:AddMapFields( "description", "AH_DESCPO" , .T., .F., { "AH_DESCPO", "C", TamSX3( "AH_DESCPO" )[1], 0 } )
+Return

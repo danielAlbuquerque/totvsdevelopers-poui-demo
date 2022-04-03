@@ -12,7 +12,7 @@ import { Location } from '@angular/common'
 })
 export class FormComponent implements OnInit {
 
-  @ViewChild(PoDynamicFormComponent) dynamicForm: PoDynamicFormComponent;
+  @ViewChild(PoDynamicFormComponent, { static: true }) dynamicForm: PoDynamicFormComponent;
 
   public readonly formFields: PoDynamicFormField[] = [
     {
@@ -26,7 +26,50 @@ export class FormComponent implements OnInit {
       label: 'Descricao',
       property: 'description',
       required: true,
-      placeholder: 'Descricao do produto'
+      gridColumns: 6,
+      placeholder: 'Descricao do produto',
+    },
+    {
+      label: 'Tipo',
+      property: 'kind',
+      required: true,
+      searchService: "/api/v1/kind-products",
+      gridColumns: 3,
+      fieldLabel: 'description',
+      fieldValue: 'id',
+      placeholder: '- selecione -',
+      columns: [
+        { property: 'id', label: 'Código' },
+        { property: 'description', label: 'Tipo' }
+      ],
+    },
+    {
+      label: 'Unidade de medida',
+      property: 'um',
+      required: true,
+      gridColumns: 2,
+      searchService: "/api/v1/unity-measure",
+      fieldLabel: 'description',
+      fieldValue: 'id',
+      placeholder: '- selecione -',
+      columns: [
+        { property: 'id', label: 'Código' },
+        { property: 'description', label: 'Unidade de medidade' }
+      ],
+    },
+    {
+      label: 'Grupo',
+      property: 'group',
+      optional: true,
+      gridColumns: 3,
+      searchService: "/api/v1/products-groups",
+      fieldLabel: 'description',
+      fieldValue: 'id',
+      placeholder: '- selecione -',
+      columns: [
+        { property: 'id', label: 'Grupo' },
+        { property: 'description', label: 'Descrição' }
+      ],
     }
   ]
   
@@ -39,7 +82,7 @@ export class FormComponent implements OnInit {
 
   get isFormInvalid(): boolean {
     if (this.dynamicForm)
-      return this.dynamicForm.form.invalid || true;
+      return this.dynamicForm.form.invalid as boolean;
     return true;
   }
 
@@ -49,17 +92,9 @@ export class FormComponent implements OnInit {
     private router: Router,
     private location: Location
   ) {
-    // this.form = this.formBuilder.group({
-    //   id: new FormControl(null, [Validators.required, Validators.maxLength(6)]),
-    //   description: new FormControl(null, [Validators.required]),
-    //   group: new FormControl(null),
-    //   kind: new FormControl(null),
-    //   um: new FormControl(null)
-    // });
   }
 
   ngOnInit(): void {
-   
   }
 
   onCancelClick(): void {
@@ -67,7 +102,16 @@ export class FormComponent implements OnInit {
   }
 
   onSaveClick(): void {
-
+    console.log(this.dynamicForm.form.value);
+    this.service.save(this.dynamicForm.form.value)
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+        },
+        error: error => {
+          console.log(error);
+        }
+      })
   }
 
   onSaveAndNewClick(): void {
