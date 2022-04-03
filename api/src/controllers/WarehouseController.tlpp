@@ -13,6 +13,9 @@ Class WarehouseController From BaseController
     @Get("/api/v1/warehouses")
     Public Method Get()
 
+    @Get("/api/v1/warehouses/:id")
+    Public Method Show()
+
 EndClass
 
 Method New() Class WarehouseController
@@ -34,3 +37,17 @@ Method Get() Class WarehouseController
     EndIf
 Return
 
+Method Show() Class WarehouseController
+    Local jPath := oRest:GetPathParamsRequest()
+    Local jResult := Nil
+
+    Self:oService := WarehouseService():New()
+    jResult := Self:oService:FindById( jPath['id'] )
+
+    If ( jResult['success'] )
+        oRest:SetResponse( jResult['result']:ToJson() )
+    Else
+        oRest:SetFault( jResult['result']:ToJson() )
+        oRest:SetStatusCode( jResult['result']['code'] )
+    EndIf
+Return

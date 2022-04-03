@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PoBreadcrumb, PoDynamicFormComponent, PoDynamicFormField, PoNotificationService } from '@po-ui/ng-components';
 import { ProductService } from '../product.service';
 import { Location } from '@angular/common'
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-form',
@@ -117,10 +118,7 @@ export class FormComponent implements OnInit {
       this.editMode = true;
       this.isBusy = true;
       this.service.findById(id).subscribe({
-        next: (product) => {
-          console.log(product);
-          this.dynamicForm.value = product;
-        },
+        next: (product) => this.dynamicForm.value = product,
         complete: () => this.isBusy = false
       })
     }
@@ -132,7 +130,7 @@ export class FormComponent implements OnInit {
 
   onSaveClick(): void {
     this.isBusy = true;
-    this.service.save(this.dynamicForm.form.value)
+    this.save(this.dynamicForm.form.value)
       .subscribe({
         next: () => {
           this.notificationService.success('Produto salvo com sucesso');
@@ -144,7 +142,7 @@ export class FormComponent implements OnInit {
     
   onSaveAndNewClick(): void {
     this.isBusy = true;
-    this.service.save(this.dynamicForm.form.value)
+    this.save(this.dynamicForm.form.value)
       .subscribe({
         next: () => {
           this.notificationService.success('Produto salvo com sucesso');
@@ -152,6 +150,12 @@ export class FormComponent implements OnInit {
         },
         complete: () => this.isBusy = false
       });
+  }
+
+  private save(data: any): Observable<any> {
+    if (this.editMode) 
+      return this.service.update(data);
+    return this.service.save(data);
   }
 
 }

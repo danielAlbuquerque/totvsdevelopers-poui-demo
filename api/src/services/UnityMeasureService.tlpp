@@ -9,6 +9,7 @@ Class UnityMeasureService From BaseService
 
 	Public Method New()
 	Public Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric )
+    public Method FindById( cId As Character ) As Json
 EndClass
 
 Method New() CLASS UnityMeasureService
@@ -34,4 +35,29 @@ Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class UnityMeasu
         jResult['result']['message'] := "Erro ao consultar unidades de medidas"
         jResult['result']['detailedMessage'] := Self:_oUnityMeasureAdapter:GetMessage()
     EndIf
+Return jResult
+
+Method FindById( cId As Character ) As Json Class UnityMeasureService
+    Local aArea    := FWGetArea()
+    Local aAreaSAH := SAH->( FWGetArea() )
+    Local jResult  := JsonObject():New()
+
+    jResult['result'] := JsonObject():New()
+
+    DbSelectArea("SAH")
+    DbSetOrder( 1 )
+
+    If ( MsSeek( FWXFilial("SAH")+cId ) )
+        jResult['success'] := .T.
+        jResult['result']["id"] := AllTrim( SAH->AH_UNIMED )
+        jResult['result']["description"] := AllTrim( SAH->AH_DESCPO )
+    Else
+        jResult['success'] := .F.
+        jResult['result']['code'] := 404
+        jResult['result']['message'] := "Unidade de medida não encontrada"
+        jResult['result']['detailedMessage'] := "A unidade de medida " + cId + " não foi encontrada"
+    EndIf
+
+    FWRestArea( aAreaSAH )
+    FWRestArea( aArea )
 Return jResult

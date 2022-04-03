@@ -4,13 +4,15 @@
     [p-breadcrumb]="breadcrumb"
 >
     <po-table
-        [p-single-select]="true"
+        [p-selectable]="true"
         p-container="shadow"
         [p-sort]="true"
         [p-striped]="true"
         [p-columns]="tableColumns"
         [p-items]="tableItems"
         [p-actions]="tableActions"
+        (p-selected)="refreshDeleteButton()"
+        (p-unselected)="refreshDeleteButton()"
     >
     </po-table>
 

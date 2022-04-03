@@ -9,6 +9,7 @@ Class WarehouseService From BaseService
 
 	Public Method New()
 	Public Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric )
+    Public Method FindById( cId As Character ) As Json
 EndClass
 
 Method New() CLASS WarehouseService
@@ -34,4 +35,29 @@ Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class WarehouseS
         jResult['result']['message'] := "Erro ao consultar armazens"
         jResult['result']['detailedMessage'] := Self:_oWarehouseAdapter:GetMessage()
     EndIf
+Return jResult
+
+Method FindById( cId As Character ) As Json Class WarehouseService
+    Local aArea    := FWGetArea()
+    Local aAreaNNR := NNR->( FWGetArea() )
+    Local jResult  := JsonObject():New()
+
+    jResult['result'] := JsonObject():New()
+
+    DbSelectArea("NNR")
+    DbSetOrder( 1 )
+
+    If ( MsSeek( FWXFilial("NNR")+cId ) )
+        jResult['success'] := .T.
+        jResult['result']["id"] := AllTrim( NNR->NNR_CODIGO )
+        jResult['result']["description"] := AllTrim( NNR->NNR_DESCRI )
+    Else
+        jResult['success'] := .F.
+        jResult['result']['code'] := 404
+        jResult['result']['message'] := "Endereco nao encontrado"
+        jResult['result']['detailedMessage'] := "O endereco " + cId + " não foi encontrado"
+    EndIf
+
+    FWRestArea( aAreaNNR )
+    FWRestArea( aArea )
 Return jResult

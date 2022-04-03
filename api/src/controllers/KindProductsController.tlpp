@@ -13,6 +13,9 @@ Class KindProductsController From BaseController
     @Get("/api/v1/kind-products")
     Public Method Get()
 
+    @Get("/api/v1/kind-products/:id")
+    Public Method Show()
+
 EndClass
 
 Method New() Class KindProductsController
@@ -37,3 +40,20 @@ Method Get() Class KindProductsController
     oRest:SetResponse( jResponse )
 Return
 
+Method Show() Class KindProductsController
+    Local jPath := oRest:GetPathParamsRequest()
+    Local jResult := JsonObject():New()
+    Local aContent := FWGetSX5( "02" )
+
+    Local nIndex := aScan( aContent, {|x| allTrim(x[3]) == AllTrim(jPath["id"])} )
+
+    If ( nIndex < 1 )
+        oRest:SetFault( "Nao encontrado" )
+        return oRest:SetStatusCode( 404 )
+    EndIf
+
+    jResult['id'] := AllTrim( aContent[nIndex][3] )
+    jResult['description'] := AllTrim( aContent[nIndex][4] )
+
+    oRest:SetResponse( jResult:ToJson() )
+Return
