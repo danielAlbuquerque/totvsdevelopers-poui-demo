@@ -13,6 +13,7 @@
         [p-actions]="tableActions"
         (p-selected)="refreshDeleteButton()"
         (p-unselected)="refreshDeleteButton()"
+        [p-loading]="isBusy"
     >
     </po-table>
 

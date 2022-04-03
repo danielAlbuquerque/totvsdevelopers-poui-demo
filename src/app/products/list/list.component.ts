@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { PoBreadcrumb, PoBreadcrumbItem, PoDialogService, PoPageAction, PoTableAction, PoTableColumn, PoTableComponent } from '@po-ui/ng-components';
+import { PoBreadcrumb, PoBreadcrumbItem, PoDialogService, PoNotificationService, PoPageAction, PoTableAction, PoTableColumn, PoTableComponent } from '@po-ui/ng-components';
 import { forkJoin, map } from 'rxjs';
 import { ProductService } from '../product.service';
 
@@ -10,6 +10,7 @@ import { ProductService } from '../product.service';
   styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
+  public isBusy: boolean = false;
   public tableItems = [];
 
   public readonly tableActions: Array<PoTableAction> = [
@@ -47,7 +48,8 @@ export class ListComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private router: Router,
-    private poDialog: PoDialogService
+    private poDialog: PoDialogService,
+    private notification: PoNotificationService
   ) { }
 
   ngOnInit(): void {
@@ -55,10 +57,12 @@ export class ListComponent implements OnInit {
   }
 
   private init() {
+    this.isBusy = true;
+    this.pageActions[1].disabled = true;
     this.productService.getData().subscribe({
       next: (response: any) => {
         this.tableItems = response.items;
-      }
+      },complete: () => this.isBusy = false
     })
   }
 
@@ -67,19 +71,19 @@ export class ListComponent implements OnInit {
       title: "Excluir produtos",
       message: "Confirma a exclusão dos produtos selecionados?",
       confirm: async () => {
+        this.isBusy = true;
         const selectedRows = this.tableItems.filter( (item: any) => item.$selected);
         const observers = [];
         for (const row of selectedRows) {
-          console.log(row);
           observers.push(this.productService.delete(row["id"]));
         }
 
-        forkJoin(observers).pipe(
-          map(data => console.log(data))
-        ).subscribe({
-          next: resp => {
-            console.log(resp);
-          }
+        forkJoin(observers).subscribe({
+          next: () => {
+            this.notification.success('Excluído com sucesso');
+            this.init();
+          },
+          complete: () => this.isBusy = false
         })
       }
     });
