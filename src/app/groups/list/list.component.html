@@ -1,0 +1,20 @@
+<po-page-dynamic-search
+    [p-actions]="pageActions"
+    p-title="Grupos de produtos"
+    [p-breadcrumb]="breadcrumb"
+>
+    <po-table
+        [p-selectable]="true"
+        p-container="shadow"
+        [p-sort]="true"
+        [p-striped]="true"
+        [p-columns]="tableColumns"
+        [p-items]="tableItems"
+        [p-actions]="tableActions"
+        (p-selected)="refreshDeleteButton()"
+        (p-unselected)="refreshDeleteButton()"
+        [p-loading]="isBusy"
+    >
+    </po-table>
+
+</po-page-dynamic-search>

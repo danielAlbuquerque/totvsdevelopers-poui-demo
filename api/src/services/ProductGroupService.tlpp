@@ -66,9 +66,9 @@ Return jResult
 
 Method SaveOrUpdate( jData, cId ) As Json Class ProductGroupService
     Local aArea    := FWGetArea()
-    Local aAreaSB1 := SB1->( FWGetArea() )
-    Local oModel   := FWLoadModel("MATA010")
-    Local oSB1Mod  := oModel:GetModel("SB1MASTER")
+    Local aAreaSBM := SBM->( FWGetArea() )
+    Local oModel   := FWLoadModel("MATA035")
+    Local oSBMMod  := oModel:GetModel("MATA035_SBM")
     Local jResult  := JsonObject():New()
 
     jResult['result'] := JsonObject():New()
@@ -78,36 +78,33 @@ Method SaveOrUpdate( jData, cId ) As Json Class ProductGroupService
     If Empty( cId )
         oModel:SetOperation( 3 )
     Else
-        DbSelectArea( "SB1" )
+        DbSelectArea( "SBM" )
         DbSetOrder( 1 )
-        MsSeek( FWXFilial("SB1")+cId )
+        MsSeek( FWXFilial("SBM")+cId )
         oModel:SetOperation( 4 )
     EndIf
 
     oModel:Activate()
 
     If ( oModel:nOperation == 3 )
-        oSB1Mod:SetValue( "B1_COD" ,   jData['id'] )
+        oSB1Mod:SetValue( "BM_GRUPO" ,   jData['id'] )
     EndIf
 
-    oSB1Mod:SetValue( "B1_DESC",   jData['description'] )
-    oSB1Mod:SetValue( "B1_TIPO",   jData['kind'] )
-    oSB1Mod:SetValue( "B1_UM",     jData['um'] )
-    oSB1Mod:SetValue( "B1_LOCPAD", jData['warehouse'] )
+    oSB1Mod:SetValue( "BM_DESC",   jData['description'] )
 
     If ( oModel:VldData() .And. oModel:CommitData())
         jResult['success'] := .T.
-        jResult['result']['message'] := 'Produto salvo com sucesso'
+        jResult['result']['message'] := 'Grupo salvo com sucesso'
     Else
         jResult['success'] := .F.
         jResult['result']['code'] := 400
-        jResult['result']['message'] := "Erro ao salvar o produto"
+        jResult['result']['message'] := "Erro ao salvar o grupo"
         jResult['result']['detailedMessage'] := Self:_HandleErrorMessage(  oModel:GetErrorMessage() )
     EndIf
 
     oModel:DeActivate()
 
-    FWRestArea( aAreaSB1 )
+    FWRestArea( aAreaSBM )
     FWRestArea( aArea )
 Return jResult
 

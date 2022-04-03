@@ -9,13 +9,8 @@ import { PoMenuItem } from '@po-ui/ng-components';
 })
 export class AppComponent {
 
-  readonly menus: Array<PoMenuItem> = [
+  public readonly menus: Array<PoMenuItem> = [
     { label: 'Produtos', link: '/products', icon: "po-icon-device-desktop" },
-    { label: 'Grupos de Produtos', link: '/products-groups', icon: "po-icon-database" }
+    { label: 'Grupos de Produtos', link: '/groups', icon: "po-icon-database" }
   ];
-
-  private onClick() {
-    alert('Clicked in menu item')
-  }
-
 }

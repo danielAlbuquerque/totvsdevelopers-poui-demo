@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { PoBreadcrumb, PoBreadcrumbItem, PoDialogService, PoNotificationService, PoPageAction, PoTableAction, PoTableColumn, PoTableComponent } from '@po-ui/ng-components';
-import { forkJoin, map } from 'rxjs';
-import { ProductService } from '../product.service';
+import { PoTableAction, PoBreadcrumb, PoTableColumn, PoPageAction, PoDialogService, PoNotificationService } from '@po-ui/ng-components';
+import { forkJoin } from 'rxjs';
+import { GroupService } from '../group.service';
 
 @Component({
   selector: 'app-list',
@@ -10,6 +10,7 @@ import { ProductService } from '../product.service';
   styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
+
   public isBusy: boolean = false;
   public tableItems = [];
 
@@ -17,27 +18,23 @@ export class ListComponent implements OnInit {
     {
       label: 'Editar',
       icon: 'po-icon-edit',
-      action: (row: any) => this.router.navigate(["/products/", row.id, "edit"])
+      action: (row: any) => this.router.navigate(["/groups/", row.id, "edit"])
     }
   ];
 
   public readonly breadcrumb: PoBreadcrumb = {
     items: [
-      { label: 'Produtos', link: '/products' }
+      { label: 'Grupos de produtos', link: '/groups' }
     ]
   };
 
   public tableColumns: PoTableColumn[] = [
     { label: 'Código', property: 'id' },
     { label: 'Descrição', property: 'description' },
-    { label: 'Grupo', property: 'groupdescription' },
-    { label: 'Unidade Medida', property: 'um' },
-    { label: 'Tipo', property: 'kind' },
-    { label: 'Local padrão', property: 'warehouse' },
   ]
 
   public pageActions: PoPageAction[] = [
-    { label: "Cadastrar novo produto", url: "/products/create", icon: "po-icon-plus-circle" },
+    { label: "Cadastrar novo grupo", url: "/groups/create", icon: "po-icon-plus-circle" },
     { label: "Excluir selecionados", action: this.onDeleteSelected.bind(this), icon: "po-icon-delete", disabled: !this.hasSelectedItems, type: 'danger' },
   ]
 
@@ -46,7 +43,7 @@ export class ListComponent implements OnInit {
   }
 
   constructor(
-    private service: ProductService,
+    private service: GroupService,
     private router: Router,
     private poDialog: PoDialogService,
     private notification: PoNotificationService
@@ -69,7 +66,7 @@ export class ListComponent implements OnInit {
   private onDeleteSelected() {
     this.poDialog.confirm({
       title: "Excluir produtos",
-      message: "Confirma a exclusão dos produtos selecionados?",
+      message: "Confirma a exclusão dos grupos selecionados?",
       confirm: async () => {
         this.isBusy = true;
         const selectedRows = this.tableItems.filter( (item: any) => item.$selected);
@@ -95,3 +92,4 @@ export class ListComponent implements OnInit {
   }
 
 }
+
