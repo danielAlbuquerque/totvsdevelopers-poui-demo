@@ -136,6 +136,7 @@ export class FormComponent implements OnInit {
           this.notificationService.success('Produto salvo com sucesso');
           this.router.navigate(["products"]);
         },
+        error: () => this.isBusy = false,
         complete: () => this.isBusy = false
       });
     }
@@ -148,6 +149,7 @@ export class FormComponent implements OnInit {
           this.notificationService.success('Produto salvo com sucesso');
           this.router.navigate(["products", "create"]);
         },
+        error: () => this.isBusy = false,
         complete: () => this.isBusy = false
       });
   }

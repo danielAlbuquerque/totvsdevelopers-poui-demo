@@ -96,13 +96,11 @@ Method Update() Class ProductsGroupsController
 Return
 
 Method Remove() Class ProductsGroupsController
-    Local jbody := JsonObject():New()
+    Local jPath := oRest:GetPathParamsRequest()
     Local jResult := Nil
 
-    jBody:FromJson( oRest:GetBodyRequest() )
-
     Self:oService := ProductGroupService():New()
-    jResult := Self:oService:Save( jBody, 5 ) // Alteracao
+    jResult := Self:oService:Remove( jPath["id"] ) // Alteracao
 
     If ( jResult['success'] )
         oRest:SetResponse( jResult['result']:ToJson() )

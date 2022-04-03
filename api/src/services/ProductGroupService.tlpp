@@ -87,10 +87,10 @@ Method SaveOrUpdate( jData, cId ) As Json Class ProductGroupService
     oModel:Activate()
 
     If ( oModel:nOperation == 3 )
-        oSB1Mod:SetValue( "BM_GRUPO" ,   jData['id'] )
+        oSBMMod:SetValue( "BM_GRUPO" ,   jData['id'] )
     EndIf
 
-    oSB1Mod:SetValue( "BM_DESC",   jData['description'] )
+    oSBMMod:SetValue( "BM_DESC",   jData['description'] )
 
     If ( oModel:VldData() .And. oModel:CommitData())
         jResult['success'] := .T.

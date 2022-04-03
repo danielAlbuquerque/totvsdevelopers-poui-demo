@@ -23,6 +23,7 @@ export class FormComponent implements OnInit {
       required: true,
       label: 'Codigo',
       gridColumns: 2,
+      maxLength: 4,
       placeholder: 'Codigo'
     },
     {
@@ -80,6 +81,7 @@ export class FormComponent implements OnInit {
           this.notificationService.success('Grupo salvo com sucesso');
           this.router.navigate(["groups"]);
         },
+        error: err => this.isBusy = false,
         complete: () => this.isBusy = false
       });
     }
@@ -92,6 +94,7 @@ export class FormComponent implements OnInit {
           this.notificationService.success('Grupo salvo com sucesso');
           this.router.navigate(["groups", "create"]);
         },
+        error: err => this.isBusy = false,
         complete: () => this.isBusy = false
       });
   }
