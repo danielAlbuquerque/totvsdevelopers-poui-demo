@@ -35,7 +35,7 @@ Method Get() Class ProductsGroupsController
     Local jResult := Nil
 
     Self:oService := ProductGroupService():New()
-    jResult := Self:oService:GetPage(  Val(jQuery['page']), Val(jQuery['pageSize']) )
+    jResult := Self:oService:GetPage(  if(!Empty(jQuery['page']),Val(jQuery['page']), nil),  if(!Empty(jQuery['pageSize']),Val(jQuery['pageSize']), nil) )
 
     If ( jResult['success'] )
         oRest:SetResponse( jResult['result'] )

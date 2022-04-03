@@ -56,6 +56,9 @@ Method FindById( cId As Character ) As Json Class ProductService
         jResult['result']["description"] := AllTrim( SB1->B1_DESC )
         jResult['result']["group"] := AllTrim( SB1->B1_GRUPO )
         jResult['result']["groupDescription"] := AllTrim( Posicione("SBM", 1, FWXFilial("SBM")+SB1->B1_COD, "BM_DESC") )
+        jResult['result']['um'] := AllTrim( SB1->B1_UM )
+        jResult['result']['kind'] := AllTrim( SB1->B1_TIPO )
+        jResult['result']['warehouse'] := AllTrim( SB1->B1_LOCPAD )
     Else
         jResult['success'] := .F.
         jResult['result']['code'] := 404
@@ -98,6 +101,7 @@ Method SaveOrUpdate( jData, cId ) As Json Class ProductService
     oSB1Mod:SetValue( "B1_TIPO",   jData['kind'] )
     oSB1Mod:SetValue( "B1_UM",     jData['um'] )
     oSB1Mod:SetValue( "B1_LOCPAD", jData['warehouse'] )
+    oSB1Mod:SetValue( "B1_GRUPO",  jData['group'] )
 
     If ( oModel:VldData() .And. oModel:CommitData())
         jResult['success'] := .T.

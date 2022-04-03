@@ -1,0 +1,37 @@
+#Include 'tlpp-core.th'
+
+Namespace TotvsDevelopers.Demo.Services
+
+Using Namespace TotvsDevelopers.Demo.Adapters
+
+Class WarehouseService From BaseService
+    Private Data _oWarehouseAdapter
+
+	Public Method New()
+	Public Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric )
+EndClass
+
+Method New() CLASS WarehouseService
+	_Super:New()
+return
+
+Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class WarehouseService
+    Local jResult  := JsonObject():New()
+
+    Default nCurrentPage := 1
+    Default nPageSize := 10
+
+    Self:_oWarehouseAdapter := WarehouseAdapter():New()
+    Self:_oWarehouseAdapter:BuildPage( nCurrentPage, nPageSize )
+
+    If ( Self:_oWarehouseAdapter:lOk )
+        jResult['success'] := .T.
+        jResult['result'] := Self:_oWarehouseAdapter:GetJSONResponse()
+    Else
+        jResult['success'] := .F.
+        jResult['result'] := JsonObject():New(0)
+        jResult['result']['code'] := Self:_oWarehouseAdapter:GetCode()
+        jResult['result']['message'] := "Erro ao consultar armazens"
+        jResult['result']['detailedMessage'] := Self:_oWarehouseAdapter:GetMessage()
+    EndIf
+Return jResult

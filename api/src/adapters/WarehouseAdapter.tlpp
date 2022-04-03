@@ -1,0 +1,40 @@
+#Include 'tlpp-core.th'
+
+Namespace TotvsDevelopers.Demo.Adapters
+
+Class WarehouseAdapter From FWAdapterBaseV2
+  	Private Data _cQuery As Character
+
+	Public Method New()
+	Public Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric )
+  	Private Method _ConfigJsonResultSet()
+EndClass
+
+Method New() CLASS WarehouseAdapter
+	_Super:New( 'GET', .T. )
+
+  	Self:_ConfigJsonResultSet()
+return
+
+Method BuildPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class WarehouseAdapter
+	Default nCurrentPage := 1
+	Default nPageSize := 10
+
+	Self:SetPage( nCurrentPage )
+	Self:SetPageSize( nPageSize )
+	Self:SetQuery( Self:_cQuery )
+	Self:SetWhere( "NNR_FILIAL = '"+ FWxFilial('NNR') +"' AND NNR.D_E_L_E_T_ = ' '" )
+	Self:SetOrder( "NNR_CODIGO" )
+
+	If ( Self:Execute() )
+		Self:FillGetResponse()
+	EndIf
+Return
+
+Method _ConfigJsonResultSet() Class WarehouseAdapter
+	Self:_cQuery := "SELECT #QueryFields# FROM " + RetSqlName( 'NNR' ) + " NNR "
+  	Self:_cQuery += "WHERE #QueryWhere# "
+
+  	Self:AddMapFields( "id", "NNR_CODIGO"  , .T., .T., { "NNR_CODIGO", "C", TamSX3( "NNR_CODIGO" )[1], 0 } )
+	Self:AddMapFields( "description", "NNR_DESCRI" , .T., .F., { "NNR_DESCRI", "C", TamSX3( "NNR_DESCRI" )[1], 0 } )
+Return

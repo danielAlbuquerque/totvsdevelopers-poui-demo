@@ -15,4 +15,8 @@ export class ProductService {
   public save( productData: any ) {
     return this.http.post(`/api/v1/products`, productData);
   }
+
+  public findById(id: string) {
+    return this.http.get(`/api/v1/products/${id}`);
+  }
 }

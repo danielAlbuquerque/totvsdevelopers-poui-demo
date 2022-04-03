@@ -5,7 +5,7 @@ import { ProductsRoutingModule } from './products-routing.module';
 import { ListComponent } from './list/list.component';
 import { FormComponent } from './form/form.component';
 import { PoPageDynamicSearchModule, PoPageDynamicTableModule } from '@po-ui/ng-templates';
-import { PoBreadcrumbModule, PoDynamicModule, PoPageModule, PoTableModule } from '@po-ui/ng-components';
+import { PoBreadcrumbModule, PoDynamicModule, PoLoadingModule, PoPageModule, PoTableModule } from '@po-ui/ng-components';
 
 
 @NgModule({
@@ -21,7 +21,8 @@ import { PoBreadcrumbModule, PoDynamicModule, PoPageModule, PoTableModule } from
     PoPageModule,
     PoTableModule,
     PoBreadcrumbModule,
-    PoDynamicModule
+    PoDynamicModule,
+    PoLoadingModule,
   ]
 })
 export class ProductsModule { }

@@ -43,4 +43,7 @@ Method _ConfigJsonResultSet() Class ProductAdapter
 	Self:AddMapFields( "description", "B1_DESC" , .T., .F., { "B1_DESC", "C", TamSX3( "B1_DESC" )[1], 0 } )
 	Self:AddMapFields( "group", "B1_GRUPO", .T., .F., { "B1_GRUPO", "C", TamSX3( "B1_GRUPO" )[1], 0 } )
 	Self:AddMapFields( "groupDescription", "BM_DESC" , .T., .F., { "BM_DESC", "C", TamSX3( "BM_DESC" )[1], 0 } )
+	Self:AddMapFields( "warehouse", "B1_LOCPAD" , .T., .F., { "B1_LOCPAD", "C", TamSX3( "B1_LOCPAD" )[1], 0 } )
+	Self:AddMapFields( "kind", "B1_TIPO" , .T., .F., { "B1_TIPO", "C", TamSX3( "B1_TIPO" )[1], 0 } )
+	Self:AddMapFields( "um", "B1_UM" , .T., .F., { "B1_UM", "C", TamSX3( "B1_UM" )[1], 0 } )
 Return

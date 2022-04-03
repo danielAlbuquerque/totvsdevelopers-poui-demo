@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { PoBreadcrumb, PoDynamicFormComponent, PoDynamicFormField } from '@po-ui/ng-components';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PoBreadcrumb, PoDynamicFormComponent, PoDynamicFormField, PoNotificationService } from '@po-ui/ng-components';
 import { ProductService } from '../product.service';
 import { Location } from '@angular/common'
 
@@ -11,8 +11,10 @@ import { Location } from '@angular/common'
   styleUrls: ['./form.component.scss']
 })
 export class FormComponent implements OnInit {
-
   @ViewChild(PoDynamicFormComponent, { static: true }) dynamicForm: PoDynamicFormComponent;
+
+  public isBusy: boolean = false;
+  public editMode: boolean = false;
 
   public readonly formFields: PoDynamicFormField[] = [
     {
@@ -70,8 +72,22 @@ export class FormComponent implements OnInit {
         { property: 'id', label: 'Grupo' },
         { property: 'description', label: 'Descrição' }
       ],
+    },
+    {
+      label: 'Local padrão',
+      property: 'warehouse',
+      required: true,
+      gridColumns: 3,
+      searchService: "/api/v1/warehouses",
+      fieldLabel: 'description',
+      fieldValue: 'id',
+      placeholder: '- selecione -',
+      columns: [
+        { property: 'id', label: 'Código' },
+        { property: 'description', label: 'Descrição' }
+      ],
     }
-  ]
+  ];
   
   public readonly breadcrumb: PoBreadcrumb = {
     items: [
@@ -87,14 +103,27 @@ export class FormComponent implements OnInit {
   }
 
   constructor(
-    private formBuilder: FormBuilder,
+    private notificationService: PoNotificationService,
     private service: ProductService,
     private router: Router,
-    private location: Location
+    private route: ActivatedRoute,
+    private location: Location,
   ) {
   }
 
   ngOnInit(): void {
+    const id = this.route.snapshot.params["id"];
+    if (id) {
+      this.editMode = true;
+      this.isBusy = true;
+      this.service.findById(id).subscribe({
+        next: (product) => {
+          console.log(product);
+          this.dynamicForm.value = product;
+        },
+        complete: () => this.isBusy = false
+      })
+    }
   }
 
   onCancelClick(): void {
@@ -102,20 +131,27 @@ export class FormComponent implements OnInit {
   }
 
   onSaveClick(): void {
-    console.log(this.dynamicForm.form.value);
+    this.isBusy = true;
     this.service.save(this.dynamicForm.form.value)
       .subscribe({
-        next: (response) => {
-          console.log(response);
+        next: () => {
+          this.notificationService.success('Produto salvo com sucesso');
+          this.router.navigate(["products"]);
         },
-        error: error => {
-          console.log(error);
-        }
-      })
-  }
-
+        complete: () => this.isBusy = false
+      });
+    }
+    
   onSaveAndNewClick(): void {
-
+    this.isBusy = true;
+    this.service.save(this.dynamicForm.form.value)
+      .subscribe({
+        next: () => {
+          this.notificationService.success('Produto salvo com sucesso');
+          this.router.navigate(["products", "create"]);
+        },
+        complete: () => this.isBusy = false
+      });
   }
 
 }

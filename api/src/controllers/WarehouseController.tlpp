@@ -5,25 +5,25 @@ Namespace TotvsDevelopers.Demo.Controllers
 
 Using Namespace TotvsDevelopers.Demo.Services
 
-Class UnityMeasuresController From BaseController
+Class WarehouseController From BaseController
     Private Data oService
 
     Public Method New() Constructor
 
-    @Get("/api/v1/unity-measure")
+    @Get("/api/v1/warehouses")
     Public Method Get()
 
 EndClass
 
-Method New() Class UnityMeasuresController
+Method New() Class WarehouseController
     _Super:New()
 Return
 
-Method Get() Class UnityMeasuresController
+Method Get() Class WarehouseController
     Local jQuery := oRest:GetQueryRequest()
     Local jResult := Nil
 
-    Self:oService := UnityMeasureService():New()
+    Self:oService := WarehouseService():New()
     jResult := Self:oService:GetPage(  if(!Empty(jQuery['page']),Val(jQuery['page']), nil),  if(!Empty(jQuery['pageSize']),Val(jQuery['pageSize']), nil) )
 
     If ( jResult['success'] )
