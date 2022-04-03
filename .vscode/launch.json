@@ -27,8 +27,10 @@
 				"TotvsDevelopers.Demo.test"
 			],
 			"label": "TLPP.PROBAT.RUN"
+		},
+		{
+			"label": "mpsdu"
 		}
 	],
-	"lastProgramExecuted": "TLPP.PROBAT.RUN",
-	"lastProgramArgumens": []
+	"lastProgramExecuted": "mpsdu"
 }

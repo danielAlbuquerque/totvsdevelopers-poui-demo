@@ -1,0 +1,11 @@
+<po-page-edit
+    [p-breadcrumb]="breadcrumb"
+    (p-cancel)="onCancelClick()"
+    [p-disable-submit]="isFormInvalid"
+    (p-save)="onSaveClick()"
+    (p-save-new)="onSaveAndNewClick()"
+    p-title="Cadastro de produto" >
+
+    <po-dynamic-form #dynamicForm [p-fields]="formFields"></po-dynamic-form>
+
+</po-page-edit>
