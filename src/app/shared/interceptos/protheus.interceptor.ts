@@ -16,7 +16,9 @@ export class ProtheusInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (environment.production) {
       const newUrl = `/app-root${request.url}`;
+      const token = JSON.parse(sessionStorage.getItem("TOKEN") || "{}");
       request = request.clone({ url: newUrl });
+      request = request.clone({setHeaders: { Authorization: `Bearer ${token.access_token}` }});
     }
     return next.handle(request);
   }
