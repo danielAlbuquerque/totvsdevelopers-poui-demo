@@ -7,6 +7,8 @@ import { PoModule } from '@po-ui/ng-components';
 import { RouterModule } from '@angular/router';
 import { PoTemplatesModule } from '@po-ui/ng-templates';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ProtheusInterceptor } from './shared/interceptos/protheus.interceptor';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     RouterModule.forRoot([]),
     PoTemplatesModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: ProtheusInterceptor, multi: true }
+  ],
+  bootstrap: [AppComponent],
 })
 export class AppModule { }
