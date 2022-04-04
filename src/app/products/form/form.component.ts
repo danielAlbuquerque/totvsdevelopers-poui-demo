@@ -5,6 +5,10 @@ import { PoBreadcrumb, PoDynamicFormComponent, PoDynamicFormField, PoNotificatio
 import { ProductService } from '../product.service';
 import { Location } from '@angular/common'
 import { Observable } from 'rxjs';
+import { KindProductService } from 'src/app/shared/services/kind-product.service';
+import { UnityMeasureService } from 'src/app/shared/services/unity-measure.service';
+import { ProductGroupService } from 'src/app/shared/services/product-group.service';
+import { WarehouseService } from 'src/app/shared/services/warehouse.service';
 
 @Component({
   selector: 'app-form',
@@ -36,7 +40,7 @@ export class FormComponent implements OnInit {
       label: 'Tipo',
       property: 'kind',
       required: true,
-      searchService: "/api/v1/kind-products",
+      searchService: this.kindProductService,
       gridColumns: 3,
       fieldLabel: 'description',
       fieldValue: 'id',
@@ -51,7 +55,7 @@ export class FormComponent implements OnInit {
       property: 'um',
       required: true,
       gridColumns: 2,
-      searchService: "/api/v1/unity-measure",
+      searchService: this.unityMeasureService,
       fieldLabel: 'description',
       fieldValue: 'id',
       placeholder: '- selecione -',
@@ -65,7 +69,7 @@ export class FormComponent implements OnInit {
       property: 'group',
       optional: true,
       gridColumns: 3,
-      searchService: "/api/v1/products-groups",
+      searchService: this.productGroupService,
       fieldLabel: 'description',
       fieldValue: 'id',
       placeholder: '- selecione -',
@@ -79,7 +83,7 @@ export class FormComponent implements OnInit {
       property: 'warehouse',
       required: true,
       gridColumns: 3,
-      searchService: "/api/v1/warehouses",
+      searchService: this.wareHouseService,
       fieldLabel: 'description',
       fieldValue: 'id',
       placeholder: '- selecione -',
@@ -105,6 +109,10 @@ export class FormComponent implements OnInit {
 
   constructor(
     private notificationService: PoNotificationService,
+    private kindProductService: KindProductService,
+    private unityMeasureService: UnityMeasureService,
+    private productGroupService: ProductGroupService,
+    private wareHouseService: WarehouseService,
     private service: ProductService,
     private router: Router,
     private route: ActivatedRoute,
