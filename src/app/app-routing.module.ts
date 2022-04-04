@@ -4,9 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   { path: "products", loadChildren: () => import("./products/products.module").then(m => m.ProductsModule) },
   { path: "groups", loadChildren: () => import("./groups/groups.module").then(m => m.GroupsModule) },
-  {
-    path: '', redirectTo: '/products', pathMatch: 'full'
-  },
+  { path: 'index.html', loadChildren: () => import("./products/products.module").then(m => m.ProductsModule) },
+  { path: '', redirectTo: '/products', pathMatch: 'full' },
 ];
 
 @NgModule({

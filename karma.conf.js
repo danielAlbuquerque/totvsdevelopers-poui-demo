@@ -25,7 +25,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/todo-list-poui'),
+      dir: require('path').join(__dirname, './coverage/totvsdevelopers-poui-demo'),
       subdir: '.',
       reporters: [
         { type: 'html' },

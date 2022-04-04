@@ -30,7 +30,13 @@
 		},
 		{
 			"label": "mpsdu"
+		},
+		{
+			"label": "sigacfg"
+		},
+		{
+			"label": "sigamdi"
 		}
 	],
-	"lastProgramExecuted": "u_xxx"
+	"lastProgramExecuted": "sigamdi"
 }

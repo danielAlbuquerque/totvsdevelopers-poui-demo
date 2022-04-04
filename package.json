@@ -1,6 +1,6 @@
 {
-  "name": "todo-list-poui",
-  "version": "0.0.0",
+  "name": "totvsdevelopers-poui-demo",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.js",
