@@ -13,7 +13,7 @@ export class ProductGroupService implements PoLookupFilter {
   ) { }
   
   getObjectByValue(value: string | any[], filterParams?: any): Observable<any> {
-    throw new Error('Method not implemented.');
+    return this.http.get<PoLookupResponseApi>(`/api/v1/products-groups/${value}`);
   }
 
   getFilteredItems?(params: PoLookupFilteredItemsParams): Observable<PoLookupResponseApi> {

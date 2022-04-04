@@ -13,7 +13,7 @@ export class KindProductService implements PoLookupFilter {
   ) { }
   
   getObjectByValue(value: string | any[], filterParams?: any): Observable<any> {
-    throw new Error('Method not implemented.');
+    return this.http.get<PoLookupResponseApi>(`/api/v1/kind-products/${value}`);
   }
 
   getFilteredItems?(params: PoLookupFilteredItemsParams): Observable<PoLookupResponseApi> {

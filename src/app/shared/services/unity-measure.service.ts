@@ -13,7 +13,7 @@ export class UnityMeasureService implements PoLookupFilter {
   ) { }
   
   getObjectByValue(value: string | any[], filterParams?: any): Observable<any> {
-    throw new Error('Method not implemented.');
+    return this.http.get<PoLookupResponseApi>(`/api/v1/unity-measure/${value}`);
   }
 
   getFilteredItems?(params: PoLookupFilteredItemsParams): Observable<PoLookupResponseApi> {
