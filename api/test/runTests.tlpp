@@ -1,0 +1,7 @@
+#Include 'protheus.ch'
+
+User Function runTests()
+  // tlpp.probat.discovery()
+  Local cCodeExecution := TLPP.PROBAT.RUN()
+  tlpp.probat.export("type:code", cCodeExecution)
+Return

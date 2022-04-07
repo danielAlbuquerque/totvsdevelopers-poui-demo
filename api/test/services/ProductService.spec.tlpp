@@ -14,7 +14,7 @@ Static jProductMock := {;
     "warehouse": "01";
 }
 
-@TestFixture(description="Valida a instancia de ProductService")
+@TestFixture(suite='demo',description="Valida a instancia de ProductService")
 Class ProductServiceSpec
     Private Data oService
 

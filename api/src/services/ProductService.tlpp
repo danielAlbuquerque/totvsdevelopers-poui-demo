@@ -7,8 +7,8 @@ Using Namespace TotvsDevelopers.Demo.Adapters
 Class ProductService From BaseService
     Private Data _oProductAdapter
 
-	Public Method New()
-	Public Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric )
+  	Public Method New()
+	  Public Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric )
     Public Method FindById( cId As Character ) As Json
     Public Method SaveOrUpdate( jData, cId ) As Json
     Public Method Remove() As Json
@@ -28,10 +28,10 @@ Method GetPage( nCurrentPage As Numeric, nPageSize As Numeric ) Class ProductSer
     Self:_oProductAdapter:BuildPage( nCurrentPage, nPageSize )
 
     If ( Self:_oProductAdapter:lOk )
-        jResult['success'] := .T.
+        jResult['succes'] := .T.
         jResult['result'] := Self:_oProductAdapter:GetJSONResponse()
     Else
-        jResult['success'] := .F.
+        jResult['succes'] := .F.
         jResult['result'] := JsonObject():New(0)
         jResult['result']['code'] := Self:_oProductAdapter:GetCode()
         jResult['result']['message'] := "Erro ao consultar os produtos"

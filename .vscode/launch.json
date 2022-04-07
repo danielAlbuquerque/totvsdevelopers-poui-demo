@@ -6,7 +6,7 @@
 			"request": "launch",
 			"name": "Smart Client Debug",
 			"program": "${command:AskForProgramName}",
-			"smartclientBin": "/Applications/smartclient.app/Contents/MacOS/smartclient",
+			"smartclientBin": "C:/TOTVS12/Protheus/Protheus/bin/smartclient/smartclient.exe",
 			"cwb": "${workspaceFolder}",
 			"isMultiSession": true,
 			"enableTableSync": true,
@@ -36,7 +36,13 @@
 		},
 		{
 			"label": "sigamdi"
+		},
+		{
+			"label": "runTests"
+		},
+		{
+			"label": "u_runTests"
 		}
 	],
-	"lastProgramExecuted": "sigamdi"
+	"lastProgramExecuted": "u_runTests"
 }
